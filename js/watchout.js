@@ -1,3 +1,15 @@
+// socket.on('news', function (data) {
+//     console.log(data);
+//   });
+
+// socket.on('got_data', function(data){
+//   console.log(data);
+// });
+
+// setInterval(function(){
+//   socket.emit('score_update', {score: score.toFixed(1)});
+// }, 1000);
+
 var h = 450;
 var w = 700;
 
@@ -7,9 +19,9 @@ var enemySpeed = 1500;
 var score = 0;
 var highScore = 0;
 
-var scoreDisplay = d3.select('body').append('p');
-var highScoreDisplay = d3.select('body').append('p');
-var svg = d3.select('body').append('svg')
+var scoreDisplay = d3.select('.scoreContainer').append('p');
+var highScoreDisplay = d3.select('.scoreContainer').append('p');
+var svg = d3.select('.container').append('svg')
   .attr('height', h)
   .attr('width', w);
 
@@ -21,33 +33,33 @@ var svg = d3.select('body').append('svg')
     .attr('height',"21px")
     .attr('width',"21px");
 
-  svg.append('pattern')
-    .attr('id', 'playerImage')
-    .attr('x', "0")
-    .attr('y',"0")
-    .attr('patternUnits', 'objectBoundingBox')
-    .attr('height',"21px")
-    .attr('width',"21px");
-  svg.select('#playerImage').append('image')
-    .attr('x', "0")
-    .attr('y',"0")
-    .attr('height',"21px")
-    .attr('width',"21px")
-    .attr('xlink:href', "images/face.jpg");
+  // svg.append('pattern')
+  //   .attr('id', 'playerImage')
+  //   .attr('x', "0")
+  //   .attr('y',"0")
+  //   .attr('patternUnits', 'objectBoundingBox')
+  //   .attr('height',"21px")
+  //   .attr('width',"21px");
+  // svg.select('#playerImage').append('image')
+  //   .attr('x', "0")
+  //   .attr('y',"0")
+  //   .attr('height',"21px")
+  //   .attr('width',"21px")
+  //   .attr('xlink:href', "images/face.jpg");
 
-    svg.append('pattern')
-    .attr('id', 'playerSadImage')
-    .attr('x', "0")
-    .attr('y',"0")
-    .attr('patternUnits', 'objectBoundingBox')
-    .attr('height',"21px")
-    .attr('width',"21px");
-  svg.select('#playerSadImage').append('image')
-    .attr('x', "0")
-    .attr('y',"0")
-    .attr('height',"21px")
-    .attr('width',"21px")
-    .attr('xlink:href', "images/sad_face.png");
+  //   svg.append('pattern')
+  //   .attr('id', 'playerSadImage')
+  //   .attr('x', "0")
+  //   .attr('y',"0")
+  //   .attr('patternUnits', 'objectBoundingBox')
+  //   .attr('height',"21px")
+  //   .attr('width',"21px");
+  // svg.select('#playerSadImage').append('image')
+  //   .attr('x', "0")
+  //   .attr('y',"0")
+  //   .attr('height',"21px")
+  //   .attr('width',"21px")
+  //   .attr('xlink:href', "images/sad_face.png");
 
   svg.select('pattern').append('image')
     .attr('x', "0")
@@ -91,7 +103,8 @@ player.enter()
   .attr('r', 10.5)
   .attr('cx', w/2)
   .attr('cy', h/2)
-  .attr('fill', "url(#playerImage)");
+  // .attr('fill', "url(#playerImage)");
+  .attr('fill', 'orange');
 
   step();
 
@@ -114,6 +127,7 @@ setInterval(function(){
 }, 1500);
 
 //Collision Detection
+var socket = io.connect('http://localhost');
 
 var checkCollisions = function(){
     //console.log('checking');
@@ -155,19 +169,17 @@ setInterval(function(){
 
 setInterval(function(){
   score += .1;
-  scoreDisplay.html('score: ' + score.toFixed(1));
+  scoreDisplay.html('score: ' + score);
   if (highScore < score){
     highScore = score;
-    highScoreDisplay.html('high score: ' + score.toFixed(1));
+    highScoreDisplay.html('high score: ' + score);
+    socket.emit('set high score', {score: score})
   }
 }, 100);
 
-var socket = io.connect('http://localhost:8081');
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('test', { score: score });
-});
-
+setInterval(function(){
+  socket.emit('get high score');
+}, 3000);
 
 
 
